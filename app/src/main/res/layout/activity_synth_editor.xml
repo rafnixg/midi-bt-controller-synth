@@ -12,7 +12,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Editor de Síntesis - RockJam Mode" />
+            app:title="Sintetizador de Ondas" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -26,44 +26,49 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Sección Filtros y Brillo -->
+            <!-- VISUALIZADOR DE ONDA -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="FORMA DE ONDA" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+            
+            <com.midibt.controller.ui.OscilloscopeView
+                android:id="@+id/oscilloscope"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="#1A1A1A"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- SELECTOR DE ONDAS -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="OSCILADOR" android:textStyle="bold" android:layout_marginBottom="8dp" android:textColor="@color/primary"/>
+            
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:hint="Onda Base">
+                <AutoCompleteTextView
+                    android:id="@+id/waveDropdown"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- FILTROS -->
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="FILTRO Y BRILLO" android:textStyle="bold" android:layout_marginBottom="8dp"/>
-            
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cutoff (Frecuencia de Corte - CC 74)"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cutoff (Brillo)"/>
             <SeekBar android:id="@+id/sbCutoff" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="127" android:layout_marginBottom="12dp"/>
-
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Resonance (Resonancia - CC 71)"/>
-            <SeekBar android:id="@+id/sbResonance" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="0" android:layout_marginBottom="24dp"/>
-
-            <!-- Sección Envolvente ADSR -->
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ENVOLVENTE (ADSR)" android:textStyle="bold" android:layout_marginBottom="8dp"/>
             
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Attack (Ataque - CC 73)"/>
+            <!-- ADSR -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ENVOLVENTE" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Attack"/>
             <SeekBar android:id="@+id/sbAttack" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="0" android:layout_marginBottom="12dp"/>
-
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Decay (Decaimiento - CC 75)"/>
-            <SeekBar android:id="@+id/sbDecay" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="64" android:layout_marginBottom="12dp"/>
-
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sustain (Sostenido - CC 79)"/>
-            <SeekBar android:id="@+id/sbSustain" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="127" android:layout_marginBottom="12dp"/>
-
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Release (Relajación - CC 72)"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Release"/>
             <SeekBar android:id="@+id/sbRelease" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="20" android:layout_marginBottom="24dp"/>
-
-            <!-- Efectos -->
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="EFECTOS ESPACIALES" android:textStyle="bold" android:layout_marginBottom="8dp"/>
-            
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Reverb (Profundidad - CC 91)"/>
-            <SeekBar android:id="@+id/sbReverb" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="40" android:layout_marginBottom="12dp"/>
-
-            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Chorus (Coro - CC 93)"/>
-            <SeekBar android:id="@+id/sbChorus" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="20" android:layout_marginBottom="32dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBack"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Cerrar Editor" />
+                android:text="Volver" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

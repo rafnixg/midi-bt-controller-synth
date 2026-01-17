@@ -49,12 +49,6 @@ class MainActivity : AppCompatActivity() {
         "Synth Effects", "Ethnic", "Percussive", "Sound Effects"
     )
 
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        if (permissions.entries.all { it.value }) startBluetoothScan()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -63,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         initializeServices()
         setupUI()
-        setupRecyclerViews()
+        setupRecyclerViews() // <--- Llamada que fallaba
         loadAllInstruments()
         loadPercussionSets()
         setupDropdowns()
@@ -89,11 +83,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        setupMidiReceiver()
-    }
-
     private fun setupRecyclerViews() {
         deviceAdapter = DeviceAdapter { connectToDevice(it) }
         binding.devicesRecyclerView.apply {
@@ -102,57 +91,57 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        setupMidiReceiver()
+    }
+
+    private fun setupMidiReceiver() {
+        midiController.setMidiCallback { status, data1, data2 ->
+            val channel = status and 0x0F
+            val type = status and 0xF0
+            when (type) {
+                0x90 -> if (data2 > 0) synthEngine.noteOn(channel, data1, data2) else synthEngine.noteOff(channel, data1)
+                0x80 -> synthEngine.noteOff(channel, data1)
+                0xB0 -> synthEngine.controlChange(channel, data1, data2)
+            }
+        }
+    }
+
     private fun setupDropdowns() {
-        // Categorías
-        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categories)
-        binding.categoryDropdown.setAdapter(categoryAdapter)
-        binding.categoryDropdown.setOnItemClickListener { _, _, position, _ ->
-            updateInstrumentDropdown(categories[position])
-        }
-
-        // Percusión
-        val percNames = percussionSets.map { it.name }
-        val percAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, percNames)
+        val catAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categories)
+        binding.categoryDropdown.setAdapter(catAdapter)
+        binding.categoryDropdown.setOnItemClickListener { _, _, position, _ -> updateInstrumentDropdown(categories[position]) }
+        
+        val percAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, percussionSets.map { it.name })
         binding.percussionDropdown.setAdapter(percAdapter)
-        binding.percussionDropdown.setOnItemClickListener { _, _, position, _ ->
-            synthEngine.programChange(9, percussionSets[position].program)
-        }
+        binding.percussionDropdown.setOnItemClickListener { _, _, position, _ -> synthEngine.programChange(9, percussionSets[position].program) }
 
-        // Selección inicial
         binding.categoryDropdown.setText(categories[0], false)
         updateInstrumentDropdown(categories[0])
-        if (percussionSets.isNotEmpty()) {
-            binding.percussionDropdown.setText(percussionSets[0].name, false)
-        }
     }
 
     private fun updateInstrumentDropdown(category: String) {
         val filtered = allInstruments.filter { it.category == category }
-        val names = filtered.map { it.name }
-        
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, names)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, filtered.map { it.name })
         binding.instrumentDropdown.setAdapter(adapter)
-        
-        // Importante: Al resetear el adaptador, el listener también debe resetearse
-        binding.instrumentDropdown.setOnItemClickListener { _, _, position, _ ->
-            selectSoundBank(filtered[position])
-        }
-
+        binding.instrumentDropdown.setOnItemClickListener { _, _, pos, _ -> selectSoundBank(filtered[pos]) }
         if (filtered.isNotEmpty()) {
             binding.instrumentDropdown.setText(filtered[0].name, false)
             selectSoundBank(filtered[0])
         }
     }
 
+    private fun selectSoundBank(soundBank: SoundBank) {
+        viewModel.setCurrentSoundBank(soundBank)
+        synthEngine.programChange(0, soundBank.program)
+    }
+
     private fun loadAllInstruments() {
         allInstruments.clear()
-        
         fun add(names: List<String>, cat: String, startIdx: Int) {
-            names.forEachIndexed { i, name ->
-                allInstruments.add(SoundBank(startIdx + i, name, cat, startIdx + i))
-            }
+            names.forEachIndexed { i, name -> allInstruments.add(SoundBank(startIdx + i, name, cat, startIdx + i)) }
         }
-
         add(listOf("Acoustic Grand Piano", "Bright Acoustic Piano", "Electric Grand Piano", "Honky-tonk Piano", "Electric Piano 1", "Electric Piano 2", "Harpsichord", "Clavinet"), "Piano", 0)
         add(listOf("Celesta", "Glockenspiel", "Music Box", "Vibraphone", "Marimba", "Xylophone", "Tubular Bells", "Dulcimer"), "Chromatic Percussion", 8)
         add(listOf("Drawbar Organ", "Percussive Organ", "Rock Organ", "Church Organ", "Reed Organ", "Accordion", "Harmonica", "Tango Accordion"), "Organ", 16)
@@ -172,21 +161,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadPercussionSets() {
-        percussionSets = listOf(
-            SoundBank(0, "Standard Kit", "Drum", 0),
-            SoundBank(8, "Room Kit", "Drum", 8),
-            SoundBank(16, "Power Kit", "Drum", 16),
-            SoundBank(24, "Electronic Kit", "Drum", 24),
-            SoundBank(25, "TR-808/909 Kit", "Drum", 25),
-            SoundBank(32, "Jazz Kit", "Drum", 32),
-            SoundBank(40, "Brush Kit", "Drum", 40),
-            SoundBank(48, "Orchestra Kit", "Drum", 48)
-        )
+        percussionSets = listOf(SoundBank(0, "Standard Kit", "Drum", 0), SoundBank(8, "Room Kit", "Drum", 8), SoundBank(16, "Power Kit", "Drum", 16), SoundBank(25, "TR-808/909 Kit", "Drum", 25))
     }
 
-    private fun selectSoundBank(soundBank: SoundBank) {
-        viewModel.setCurrentSoundBank(soundBank)
-        synthEngine.programChange(0, soundBank.program)
+    private fun checkPermissionsAndScan() {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT) else arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (permissions.all { ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }) startBluetoothScan()
+        else registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { if (it.values.all { g -> g }) startBluetoothScan() }.launch(permissions)
+    }
+
+    private fun startBluetoothScan() {
+        if (!bluetoothAdapter.isEnabled) return
+        viewModel.setScanning(true)
+        viewModel.clearDevices()
+        midiScanner.startScan { device -> runOnUiThread { viewModel.addDevice(device) } }
+        handler.postDelayed({ stopBluetoothScan() }, 10000)
+    }
+
+    private fun stopBluetoothScan() { midiScanner.stopScan(); viewModel.setScanning(false) }
+
+    private fun connectToDevice(device: BluetoothDevice) {
+        viewModel.setLoading(true)
+        midiController.connect(device) { _, success ->
+            runOnUiThread {
+                viewModel.setLoading(false)
+                if (success) { viewModel.setConnected(device.name ?: "MIDI"); setupMidiReceiver() }
+            }
+        }
     }
 
     private fun observeViewModel() {
@@ -204,86 +205,19 @@ class MainActivity : AppCompatActivity() {
         viewModel.isLoading.observe(this) { binding.loadingOverlay.isVisible = it }
     }
 
-    private fun checkPermissionsAndScan() {
-        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
-        } else {
-            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-        if (permissions.all { ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }) {
-            startBluetoothScan()
-        } else {
-            permissionLauncher.launch(permissions)
-        }
-    }
-
-    private fun startBluetoothScan() {
-        if (!bluetoothAdapter.isEnabled) return
-        viewModel.setScanning(true)
-        viewModel.clearDevices()
-        midiScanner.startScan { device -> runOnUiThread { viewModel.addDevice(device) } }
-        handler.postDelayed({ stopBluetoothScan() }, 10000)
-    }
-
-    private fun stopBluetoothScan() {
-        midiScanner.stopScan()
-        viewModel.setScanning(false)
-    }
-
-    private fun connectToDevice(device: BluetoothDevice) {
-        viewModel.setLoading(true)
-        stopBluetoothScan()
-        midiController.connect(device) { midiDevice, success ->
-            runOnUiThread {
-                viewModel.setLoading(false)
-                if (success && midiDevice != null) {
-                    viewModel.setConnected(device.name ?: "MIDI Device")
-                    setupMidiReceiver()
-                    Toast.makeText(this, "Conectado", Toast.LENGTH_SHORT).show()
-                } else {
-                    viewModel.setDisconnected()
-                }
-            }
-        }
-    }
-
-    private fun setupMidiReceiver() {
-        midiController.setMidiCallback { status, data1, data2 ->
-            val channel = status and 0x0F
-            val type = status and 0xF0
-            when (type) {
-                0x90 -> if (data2 > 0) synthEngine.noteOn(channel, data1, data2) else synthEngine.noteOff(channel, data1)
-                0x80 -> synthEngine.noteOff(channel, data1)
-                0xB0 -> synthEngine.controlChange(channel, data1, data2)
-            }
-        }
-    }
-
     private fun updateConnectionUI(state: MainViewModel.ConnectionState) {
-        when (state) {
-            is MainViewModel.ConnectionState.Connected -> {
-                binding.connectionStatusText.text = "Conectado"
-                binding.connectionIndicator.setBackgroundResource(R.drawable.circle_indicator_connected)
-            }
-            else -> {
-                binding.connectionStatusText.text = "Desconectado"
-                binding.connectionIndicator.setBackgroundResource(R.drawable.circle_indicator)
-            }
-        }
+        val isConnected = state is MainViewModel.ConnectionState.Connected
+        binding.connectionStatusText.text = if (isConnected) "Conectado" else "Desconectado"
+        binding.connectionIndicator.setBackgroundResource(if (isConnected) R.drawable.circle_indicator_connected else R.drawable.circle_indicator)
     }
 
     private fun initializeSynthEngine() {
         viewModel.setLoading(true)
-        Thread {
-            synthEngine.initialize()
-            runOnUiThread { viewModel.setLoading(false) }
-        }.start()
+        Thread { synthEngine.initialize(); runOnUiThread { viewModel.setLoading(false) } }.start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         midiScanner.stopScan()
-        midiController.disconnect()
-        synthEngine.shutdown()
     }
 }

@@ -11,31 +11,30 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 
-class MidiController private constructor(private val midiManager: MidiManager) {
+class MidiController private constructor(context: Context) {
+
+    private val midiManager: MidiManager = context.getSystemService(Context.MIDI_SERVICE) as MidiManager
+    private var midiDevice: MidiDevice? = null
+    private var midiOutputPort: MidiOutputPort? = null
+    private var midiCallback: ((status: Int, data1: Int, data2: Int) -> Unit)? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     companion object {
         private const val TAG = "MidiController"
-        @Volatile
-        private var INSTANCE: MidiController? = null
+        @Volatile private var INSTANCE: MidiController? = null
 
         fun getInstance(context: Context): MidiController {
             return INSTANCE ?: synchronized(this) {
-                val midiManager = context.getSystemService(Context.MIDI_SERVICE) as MidiManager
-                val instance = MidiController(midiManager)
+                val instance = MidiController(context.applicationContext)
                 INSTANCE = instance
                 instance
             }
         }
     }
 
-    private var midiDevice: MidiDevice? = null
-    private var midiOutputPort: MidiOutputPort? = null
-    private var midiCallback: ((status: Int, data1: Int, data2: Int) -> Unit)? = null
-    private val handler = Handler(Looper.getMainLooper())
-
     @SuppressLint("MissingPermission")
     fun connect(device: BluetoothDevice, onResult: (MidiDevice?, Boolean) -> Unit) {
-        Log.d(TAG, "Connecting to MIDI device: ${device.name}")
+        Log.d(TAG, "Conectando a: ${device.name}")
         midiManager.openBluetoothDevice(device, { deviceResult ->
             if (deviceResult != null) {
                 this.midiDevice = deviceResult
@@ -48,14 +47,21 @@ class MidiController private constructor(private val midiManager: MidiManager) {
     }
 
     private fun setupMidiInput(device: MidiDevice) {
-        if (device.info.outputPortCount > 0) {
-            midiOutputPort = device.openOutputPort(0)
-            midiOutputPort?.connect(midiReceiver)
-            Log.d(TAG, "MidiReceiver connected and listening")
+        try {
+            midiOutputPort?.close()
+            val info = device.info
+            if (info.outputPortCount > 0) {
+                midiOutputPort = device.openOutputPort(0)
+                midiOutputPort?.connect(midiReceiver)
+                Log.i(TAG, "MidiReceiver conectado exitosamente")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error en setupMidiInput: ${e.message}")
         }
     }
 
-    fun setMidiCallback(callback: (status: Int, data1: Int, data2: Int) -> Unit) {
+    fun setMidiCallback(callback: (Int, Int, Int) -> Unit) {
+        Log.d(TAG, "Nuevo callback MIDI configurado")
         this.midiCallback = callback
     }
 
@@ -64,30 +70,29 @@ class MidiController private constructor(private val midiManager: MidiManager) {
             var i = offset
             while (i < offset + count) {
                 val status = data[i].toInt() and 0xFF
-                if (status >= 0xF8) { i++; continue }
+                if (status >= 0xF8) { i++; continue } // Ignorar real-time
                 
-                when (status and 0xF0) {
-                    0x90, 0x80, 0xB0, 0xE0 -> {
-                        if (i + 2 < offset + count) {
-                            val d1 = data[i + 1].toInt() and 0x7F
-                            val d2 = data[i + 2].toInt() and 0x7F
-                            midiCallback?.invoke(status, d1, d2)
-                            i += 3
-                        } else i++
+                if (i + 2 < offset + count) {
+                    val d1 = data[i + 1].toInt() and 0x7F
+                    val d2 = data[i + 2].toInt() and 0x7F
+                    
+                    // Log siempre visible para verificar que entran datos
+                    Log.v(TAG, "MIDI IN: 0x${"%02X".format(status)} $d1 $d2")
+                    
+                    midiCallback?.invoke(status, d1, d2)
+                    
+                    // Determinar longitud del mensaje
+                    i += when (status and 0xF0) {
+                        0xC0, 0xD0 -> 2
+                        else -> 3
                     }
-                    0xC0, 0xD0 -> {
-                        if (i + 1 < offset + count) {
-                            midiCallback?.invoke(status, data[i + 1].toInt() and 0x7F, 0)
-                            i += 2
-                        } else i++
-                    }
-                    else -> i++
-                }
+                } else i++
             }
         }
     }
 
     fun disconnect() {
+        Log.w(TAG, "Desconectando manualmente...")
         midiOutputPort?.close()
         midiDevice?.close()
         midiOutputPort = null
