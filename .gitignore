@@ -1,2 +1,29 @@
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.DS_Store
+captures
 /build
-/.gradle
+/app/build
+
+# Gradle
+.gradle/
+local.properties
+gradle/wrapper/gradle-wrapper.jar
+.cache
+
+# NDK / C++
+/.externalNativeBuild
+/app/.cxx
+/app/src/main/cpp/fluidsynth/lib/
+/app/src/main/cpp/fluidsynth/include/
+*.so
+
+# Log / Temp
+*.log
+/captures/
+
+# Archivos de usuario / Backup
+*.swp
+*.bak
+*~
