@@ -6,12 +6,22 @@ import com.midibt.controller.BuildConfig
 import java.io.File
 import java.io.FileOutputStream
 
-class SynthEngine(private val context: Context) {
+class SynthEngine private constructor(private val context: Context) {
 
     companion object {
         private const val TAG = "SynthEngine"
         private var librariesLoaded = false
-        
+        @Volatile
+        private var INSTANCE: SynthEngine? = null
+
+        fun getInstance(context: Context): SynthEngine {
+            return INSTANCE ?: synchronized(this) {
+                val instance = SynthEngine(context.applicationContext)
+                INSTANCE = instance
+                instance
+            }
+        }
+
         init {
             try {
                 System.loadLibrary("synth-lib")
@@ -26,22 +36,15 @@ class SynthEngine(private val context: Context) {
     private var isInitialized = false
 
     fun initialize(): Boolean {
-        if (!librariesLoaded) {
-            Log.e(TAG, "No se puede inicializar: Librerías no cargadas")
-            return false
-        }
+        if (!librariesLoaded) return false
         if (isInitialized) return true
         
         try {
             val soundFontPath = copySoundFontFromAssets()
             if (soundFontPath != null) {
-                Log.d(TAG, "Inicializando motor con SoundFont: $soundFontPath")
                 val result = nativeInit(soundFontPath)
                 isInitialized = (result == 0)
-                Log.d(TAG, "Resultado inicialización nativa: ${if (isInitialized) "ÉXITO" else "FALLO ($result)"}")
                 return isInitialized
-            } else {
-                Log.e(TAG, "ERROR: No se encontró ningún archivo .sf2 en assets")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error durante la inicialización: ${e.message}")
@@ -49,40 +52,28 @@ class SynthEngine(private val context: Context) {
         return false
     }
 
+    fun isReady() = isInitialized
+
     fun noteOn(channel: Int, note: Int, velocity: Int) {
-        if (isInitialized) {
-            if (BuildConfig.DEBUG) Log.v(TAG, "DEBUG MIDI -> Note On: nota=$note, vel=$velocity")
-            nativeNoteOn(channel, note, velocity)
-        } else {
-            Log.w(TAG, "Intento de NoteOn sin motor inicializado")
-        }
+        if (isInitialized) nativeNoteOn(channel, note, velocity)
     }
 
     fun noteOff(channel: Int, note: Int) {
-        if (isInitialized) {
-            if (BuildConfig.DEBUG) Log.v(TAG, "DEBUG MIDI -> Note Off: nota=$note")
-            nativeNoteOff(channel, note)
-        }
+        if (isInitialized) nativeNoteOff(channel, note)
     }
 
     fun programChange(channel: Int, program: Int) {
-        if (isInitialized) {
-            Log.i(TAG, "Cambio de instrumento: $program")
-            nativeProgramChange(channel, program)
-        }
+        if (isInitialized) nativeProgramChange(channel, program)
     }
 
     fun controlChange(channel: Int, controller: Int, value: Int) {
-        if (isInitialized) {
-            nativeControlChange(channel, controller, value)
-        }
+        if (isInitialized) nativeControlChange(channel, controller, value)
     }
 
     fun shutdown() {
         if (isInitialized) {
             nativeShutdown()
             isInitialized = false
-            Log.d(TAG, "Synth shutdown")
         }
     }
 
@@ -91,19 +82,13 @@ class SynthEngine(private val context: Context) {
             val assetList = context.assets.list("") ?: return null
             val sf = assetList.firstOrNull { it.endsWith(".sf2") } ?: return null
             val file = File(context.filesDir, sf)
-            
             if (!file.exists()) {
-                Log.d(TAG, "Copiando SoundFont $sf a memoria interna...")
                 context.assets.open(sf).use { input ->
                     FileOutputStream(file).use { output -> input.copyTo(output) }
                 }
-                Log.d(TAG, "Copia finalizada")
             }
             return file.absolutePath
-        } catch (e: Exception) {
-            Log.e(TAG, "Error al copiar SoundFont: ${e.message}")
-            return null
-        }
+        } catch (e: Exception) { return null }
     }
 
     private external fun nativeInit(path: String): Int

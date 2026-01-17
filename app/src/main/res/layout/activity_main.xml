@@ -34,7 +34,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Estado de Conexión -->
+            <!-- Conexión MIDI -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Selección de Instrumentos (Melódicos) -->
+            <!-- Teclado -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -166,14 +166,13 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Selección de Percusión (Pads) -->
+            <!-- Pads -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/primary">
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -185,8 +184,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pads (Batería)"
-                        android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="@color/primary" />
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -205,11 +203,20 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Botón Editor de Síntesis -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenEditor"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Editor de Síntesis"
+                app:icon="@android:drawable/ic_menu_preferences" />
+
             <TextView
                 android:id="@+id/currentPresetText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_gravity="center"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 tools:text="Preset: Grand Piano" />

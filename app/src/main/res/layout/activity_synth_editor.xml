@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Editor de Síntesis - RockJam Mode" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Sección Filtros y Brillo -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="FILTRO Y BRILLO" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Cutoff (Frecuencia de Corte - CC 74)"/>
+            <SeekBar android:id="@+id/sbCutoff" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="127" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Resonance (Resonancia - CC 71)"/>
+            <SeekBar android:id="@+id/sbResonance" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="0" android:layout_marginBottom="24dp"/>
+
+            <!-- Sección Envolvente ADSR -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="ENVOLVENTE (ADSR)" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Attack (Ataque - CC 73)"/>
+            <SeekBar android:id="@+id/sbAttack" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="0" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Decay (Decaimiento - CC 75)"/>
+            <SeekBar android:id="@+id/sbDecay" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="64" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Sustain (Sostenido - CC 79)"/>
+            <SeekBar android:id="@+id/sbSustain" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="127" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Release (Relajación - CC 72)"/>
+            <SeekBar android:id="@+id/sbRelease" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="20" android:layout_marginBottom="24dp"/>
+
+            <!-- Efectos -->
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="EFECTOS ESPACIALES" android:textStyle="bold" android:layout_marginBottom="8dp"/>
+            
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Reverb (Profundidad - CC 91)"/>
+            <SeekBar android:id="@+id/sbReverb" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="40" android:layout_marginBottom="12dp"/>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Chorus (Coro - CC 93)"/>
+            <SeekBar android:id="@+id/sbChorus" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="127" android:progress="20" android:layout_marginBottom="32dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cerrar Editor" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
