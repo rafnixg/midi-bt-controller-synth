@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MIDI BT Controller</string>
+    <string name="connection_status">Estado de Conexión</string>
+    <string name="not_connected">No conectado</string>
+    <string name="connected_to">Conectado a: %s</string>
+    <string name="scanning">Escaneando...</string>
+    <string name="scan_devices">Buscar Dispositivos</string>
+    <string name="stop_scan">Detener Búsqueda</string>
+    <string name="sound_banks">Bancos de Sonidos</string>
+    <string name="select_device">Seleccionar Dispositivo MIDI</string>
+    <string name="no_devices_found">No se encontraron dispositivos</string>
+    <string name="bluetooth_disabled">Bluetooth desactivado</string>
+    <string name="enable_bluetooth">Activar Bluetooth</string>
+    <string name="permission_required">Se requieren permisos de ubicación para escanear dispositivos Bluetooth</string>
+    <string name="grant_permission">Otorgar Permiso</string>
+    <string name="current_preset">Preset Actual</string>
+    <string name="loading_soundfont">Cargando banco de sonidos...</string>
+    <string name="sound_bank_icon">Sound bank icon</string>
+</resources>

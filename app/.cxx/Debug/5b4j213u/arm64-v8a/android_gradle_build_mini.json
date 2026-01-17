@@ -1,0 +1,44 @@
+{
+  "buildFiles": [
+    "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\rafni\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\projectos\\midi-bt-controller\\app\\.cxx\\Debug\\5b4j213u\\arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\rafni\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\projectos\\midi-bt-controller\\app\\.cxx\\Debug\\5b4j213u\\arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "synth-lib::@6890427a1f51a3e7e1df": {
+      "artifactName": "synth-lib",
+      "abi": "arm64-v8a",
+      "output": "C:\\projectos\\midi-bt-controller\\app\\build\\intermediates\\cxx\\Debug\\5b4j213u\\obj\\arm64-v8a\\libsynth-lib.so",
+      "runtimeFiles": [
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libfluidsynth.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\liboboe.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libglib-2.0.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libgthread-2.0.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libgmodule-2.0.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libgobject-2.0.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libgio-2.0.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libsndfile.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libFLAC.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libopus.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libvorbis.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libvorbisenc.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libvorbisfile.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libogg.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libpcre.so",
+        "C:\\projectos\\midi-bt-controller\\app\\src\\main\\cpp\\fluidsynth\\lib\\arm64-v8a\\libinstpatch-1.0.so"
+      ]
+    }
+  }
+}

@@ -1,0 +1,55 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Piano keys icon -->
+    <group android:translateX="27" android:translateY="27">
+        <!-- White keys -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M0,0 L54,0 L54,54 L0,54 Z"/>
+        
+        <!-- Black keys -->
+        <path
+            android:fillColor="#212121"
+            android:pathData="M7,0 L11,0 L11,30 L7,30 Z"/>
+        <path
+            android:fillColor="#212121"
+            android:pathData="M16,0 L20,0 L20,30 L16,30 Z"/>
+        <path
+            android:fillColor="#212121"
+            android:pathData="M34,0 L38,0 L38,30 L34,30 Z"/>
+        <path
+            android:fillColor="#212121"
+            android:pathData="M43,0 L47,0 L47,30 L43,30 Z"/>
+        
+        <!-- Key separators -->
+        <path
+            android:strokeColor="#BDBDBD"
+            android:strokeWidth="0.5"
+            android:pathData="M9,30 L9,54"/>
+        <path
+            android:strokeColor="#BDBDBD"
+            android:strokeWidth="0.5"
+            android:pathData="M18,30 L18,54"/>
+        <path
+            android:strokeColor="#BDBDBD"
+            android:strokeWidth="0.5"
+            android:pathData="M27,0 L27,54"/>
+        <path
+            android:strokeColor="#BDBDBD"
+            android:strokeWidth="0.5"
+            android:pathData="M36,30 L36,54"/>
+        <path
+            android:strokeColor="#BDBDBD"
+            android:strokeWidth="0.5"
+            android:pathData="M45,30 L45,54"/>
+        
+        <!-- Bluetooth symbol -->
+        <path
+            android:fillColor="#1976D2"
+            android:pathData="M25,40 L30,45 L30,54 L27,51 L22,56 L20,54 L26,48 L20,42 L22,40 L27,45 L30,42 L30,51 L25,56 Z"/>
+    </group>
+</vector>

@@ -1,0 +1,1 @@
+C:\projectos\midi-bt-controller\app\src\main\cpp\CMakeLists.txt

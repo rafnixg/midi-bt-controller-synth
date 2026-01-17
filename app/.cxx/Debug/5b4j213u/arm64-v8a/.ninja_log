@@ -1,0 +1,11 @@
+# ninja log v5
+4	935	7902991867571363	CMakeFiles/synth-lib.dir/SynthManager.cpp.o	3c2b48a211980c93
+936	1091	7902991869130771	C:/projectos/midi-bt-controller/app/build/intermediates/cxx/Debug/5b4j213u/obj/arm64-v8a/libsynth-lib.so	7919e84d104d4735
+0	9	0	clean	8e9fb7bbd248cd65
+6	164	7902993543116471	C:/projectos/midi-bt-controller/app/build/intermediates/cxx/Debug/5b4j213u/obj/arm64-v8a/libsynth-lib.so	d90607918ebd1a42
+0	8	0	clean	8e9fb7bbd248cd65
+1	7	0	clean	8e9fb7bbd248cd65
+9	839	7902997358802963	CMakeFiles/synth-lib.dir/SynthManager.cpp.o	3c2b48a211980c93
+840	987	7902997360274491	C:/projectos/midi-bt-controller/app/build/intermediates/cxx/Debug/5b4j213u/obj/arm64-v8a/libsynth-lib.so	d90607918ebd1a42
+4	562	7903069054607399	CMakeFiles/synth-lib.dir/SynthManager.cpp.o	3c2b48a211980c93
+562	685	7903069055846805	C:/projectos/midi-bt-controller/app/build/intermediates/cxx/Debug/5b4j213u/obj/arm64-v8a/libsynth-lib.so	d90607918ebd1a42

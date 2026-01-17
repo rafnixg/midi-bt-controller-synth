@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.midibt.controller.app-debug-37:/layout_activity_main.xml.flat",
+        "source": "com.midibt.controller.app-main-39:/layout/activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\layout_item_sound_bank.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\layout\\item_sound_bank.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\drawable_circle_indicator_connected.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\drawable\\circle_indicator_connected.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\layout_item_device.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\layout\\item_device.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\drawable_circle_indicator.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\drawable\\circle_indicator.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\drawable_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\drawable\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-debug-37:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\rafni\\.gradle\\daemon\\8.13\\com.midibt.controller.app-main-39:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    }
+]
