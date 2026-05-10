@@ -3,8 +3,12 @@
 *.iml
 .DS_Store
 captures
+
+# Build outputs
 /build
 /app/build
+/app/.cxx
+/.externalNativeBuild
 
 # Gradle
 .gradle/
@@ -12,12 +16,9 @@ local.properties
 gradle/wrapper/gradle-wrapper.jar
 .cache
 
-# NDK / C++
-/.externalNativeBuild
-/app/.cxx
-/app/src/main/cpp/fluidsynth/lib/
-/app/src/main/cpp/fluidsynth/include/
-*.so
+# NDK / C++ - librerías precompiladas (descargar con scripts/setup_fluidsynth)
+app/src/main/cpp/fluidsynth/lib/
+app/src/main/cpp/fluidsynth/include/
 
 # Log / Temp
 *.log
