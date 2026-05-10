@@ -20,6 +20,7 @@ public:
     void programChange(int channel, int program);
     void bankSelect(int channel, int bank);
     void controlChange(int channel, int controller, int value);
+    void pitchBend(int channel, int value);
     void shutdown();
 
 private:

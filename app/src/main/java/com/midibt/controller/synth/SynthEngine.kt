@@ -98,6 +98,9 @@ class SynthEngine private constructor(private val context: Context) {
     fun programChange(c: Int, p: Int) { if (isInitialized) nativeProgramChange(c, p) }
     fun bankSelect(c: Int, b: Int) { if (isInitialized) nativeBankSelect(c, b) }
     fun controlChange(c: Int, ct: Int, v: Int) { if (isInitialized) nativeControlChange(c, ct, v) }
+    fun pitchBend(c: Int, v: Int) { if (isInitialized) nativePitchBend(c, v) }
+    /** Sends All Notes Off (CC 123) on all 16 MIDI channels. */
+    fun allNotesOff() { if (isInitialized) for (ch in 0..15) nativeControlChange(ch, 123, 0) }
 
     fun shutdown() {
         isPlaying = false
@@ -128,5 +131,6 @@ class SynthEngine private constructor(private val context: Context) {
     private external fun nativeProgramChange(c: Int, p: Int)
     private external fun nativeBankSelect(c: Int, b: Int)
     private external fun nativeControlChange(c: Int, ct: Int, v: Int)
+    private external fun nativePitchBend(c: Int, v: Int)
     private external fun nativeShutdown()
 }

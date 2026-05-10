@@ -87,6 +87,12 @@ void SynthManager::controlChange(int channel, int controller, int value) {
 #endif
 }
 
+void SynthManager::pitchBend(int channel, int value) {
+#if HAS_FLUIDSYNTH
+    if (synth && initialized) fluid_synth_pitch_bend(synth, channel, value);
+#endif
+}
+
 void SynthManager::shutdown() {
 #if HAS_FLUIDSYNTH
     if (synth) delete_fluid_synth(synth);
@@ -128,6 +134,9 @@ JNIEXPORT void JNICALL Java_com_midibt_controller_synth_SynthEngine_nativeBankSe
 }
 JNIEXPORT void JNICALL Java_com_midibt_controller_synth_SynthEngine_nativeControlChange(JNIEnv*, jobject, jint c, jint ct, jint v) {
     if (gSynthManager) gSynthManager->controlChange(c, ct, v);
+}
+JNIEXPORT void JNICALL Java_com_midibt_controller_synth_SynthEngine_nativePitchBend(JNIEnv*, jobject, jint c, jint v) {
+    if (gSynthManager) gSynthManager->pitchBend(c, v);
 }
 JNIEXPORT void JNICALL Java_com_midibt_controller_synth_SynthEngine_nativeShutdown(JNIEnv*, jobject) {
     if (gSynthManager) { gSynthManager->shutdown(); delete gSynthManager; gSynthManager = nullptr; }

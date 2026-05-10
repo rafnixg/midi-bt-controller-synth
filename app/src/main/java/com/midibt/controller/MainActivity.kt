@@ -4,8 +4,12 @@ import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.content.pm.PackageManager
 import android.media.midi.MidiManager
 import android.os.Build
@@ -39,8 +43,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var deviceAdapter: DeviceAdapter
 
     private val handler = Handler(Looper.getMainLooper())
+    private lateinit var audioManager: AudioManager
+    private var audioFocusRequest: AudioFocusRequest? = null
+    private val prefs by lazy { getSharedPreferences("midi_prefs", Context.MODE_PRIVATE) }
     private var allInstruments = mutableListOf<SoundBank>()
     private var percussionSets = listOf<SoundBank>()
+
+    private val btDisconnectReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == BluetoothDevice.ACTION_ACL_DISCONNECTED && midiController.isConnected) {
+                midiController.notifyDisconnect()
+            }
+        }
+    }
     
     private val categories = listOf(
         "Piano", "Chromatic Percussion", "Organ", "Guitar", 
@@ -72,6 +87,8 @@ class MainActivity : AppCompatActivity() {
         midiController = MidiController.getInstance(this)
         synthEngine = SynthEngine.getInstance(this)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        registerReceiver(btDisconnectReceiver, IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED))
     }
 
     private fun setupUI() {
@@ -81,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnOpenEditor.setOnClickListener {
             startActivity(Intent(this, SynthEditorActivity::class.java))
         }
+        binding.btnPanic.setOnClickListener { synthEngine.allNotesOff() }
     }
 
     private fun setupRecyclerViews() {
@@ -96,14 +114,25 @@ class MainActivity : AppCompatActivity() {
         setupMidiReceiver()
     }
 
+    override fun onPause() {
+        super.onPause()
+        midiController.removeMidiListener("main")
+    }
+
     private fun setupMidiReceiver() {
-        midiController.setMidiCallback { status, data1, data2 ->
+        midiController.addMidiListener("main") { status, data1, data2 ->
             val channel = status and 0x0F
             val type = status and 0xF0
             when (type) {
                 0x90 -> if (data2 > 0) synthEngine.noteOn(channel, data1, data2) else synthEngine.noteOff(channel, data1)
                 0x80 -> synthEngine.noteOff(channel, data1)
                 0xB0 -> synthEngine.controlChange(channel, data1, data2)
+                0xE0 -> synthEngine.pitchBend(channel, (data2 shl 7) or data1)
+                0xC0 -> {
+                    synthEngine.programChange(channel, data1)
+                    val match = allInstruments.firstOrNull { it.program == data1 }
+                    if (match != null) runOnUiThread { selectSoundBank(match) }
+                }
             }
         }
     }
@@ -112,29 +141,45 @@ class MainActivity : AppCompatActivity() {
         val catAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, categories)
         binding.categoryDropdown.setAdapter(catAdapter)
         binding.categoryDropdown.setOnItemClickListener { _, _, position, _ -> updateInstrumentDropdown(categories[position]) }
-        
+
         val percAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, percussionSets.map { it.name })
         binding.percussionDropdown.setAdapter(percAdapter)
-        binding.percussionDropdown.setOnItemClickListener { _, _, position, _ -> synthEngine.programChange(9, percussionSets[position].program) }
+        binding.percussionDropdown.setOnItemClickListener { _, _, position, _ ->
+            synthEngine.programChange(9, percussionSets[position].program)
+            prefs.edit().putInt("last_percussion", percussionSets[position].program).apply()
+        }
 
-        binding.categoryDropdown.setText(categories[0], false)
-        updateInstrumentDropdown(categories[0])
+        val savedCategory = prefs.getString("last_category", categories[0])
+            ?.takeIf { it in categories } ?: categories[0]
+        val savedInstrument = prefs.getString("last_instrument", null)
+        val savedPercProgram = prefs.getInt("last_percussion", percussionSets[0].program)
+        val savedPercIdx = percussionSets.indexOfFirst { it.program == savedPercProgram }.takeIf { it >= 0 } ?: 0
+
+        binding.categoryDropdown.setText(savedCategory, false)
+        binding.percussionDropdown.setText(percussionSets[savedPercIdx].name, false)
+        synthEngine.programChange(9, percussionSets[savedPercIdx].program)
+        updateInstrumentDropdown(savedCategory, savedInstrument)
     }
 
-    private fun updateInstrumentDropdown(category: String) {
+    private fun updateInstrumentDropdown(category: String, selectName: String? = null) {
         val filtered = allInstruments.filter { it.category == category }
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, filtered.map { it.name })
         binding.instrumentDropdown.setAdapter(adapter)
         binding.instrumentDropdown.setOnItemClickListener { _, _, pos, _ -> selectSoundBank(filtered[pos]) }
         if (filtered.isNotEmpty()) {
-            binding.instrumentDropdown.setText(filtered[0].name, false)
-            selectSoundBank(filtered[0])
+            val idx = selectName?.let { name -> filtered.indexOfFirst { it.name == name }.takeIf { it >= 0 } } ?: 0
+            binding.instrumentDropdown.setText(filtered[idx].name, false)
+            selectSoundBank(filtered[idx])
         }
     }
 
     private fun selectSoundBank(soundBank: SoundBank) {
         viewModel.setCurrentSoundBank(soundBank)
         synthEngine.programChange(0, soundBank.program)
+        prefs.edit()
+            .putString("last_category", soundBank.category)
+            .putString("last_instrument", soundBank.name)
+            .apply()
     }
 
     private fun loadAllInstruments() {
@@ -185,7 +230,14 @@ class MainActivity : AppCompatActivity() {
         midiController.connect(device) { _, success ->
             runOnUiThread {
                 viewModel.setLoading(false)
-                if (success) { viewModel.setConnected(device.name ?: "MIDI"); setupMidiReceiver() }
+                if (success) {
+                    val name = device.name ?: "MIDI"
+                    viewModel.setConnected(name)
+                    midiController.setDisconnectListener {
+                        viewModel.setDisconnected()
+                        Toast.makeText(this, "Dispositivo $name desconectado", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }
@@ -213,11 +265,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeSynthEngine() {
         viewModel.setLoading(true)
-        Thread { synthEngine.initialize(); runOnUiThread { viewModel.setLoading(false) } }.start()
+        Thread {
+            synthEngine.initialize()
+            runOnUiThread {
+                viewModel.setLoading(false)
+                requestAudioFocus()
+            }
+        }.start()
+    }
+
+    private fun requestAudioFocus() {
+        audioFocusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+            .setOnAudioFocusChangeListener { change ->
+                if (change == AudioManager.AUDIOFOCUS_LOSS ||
+                    change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                    synthEngine.allNotesOff()
+                }
+            }
+            .build()
+        audioManager.requestAudioFocus(audioFocusRequest!!)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         midiScanner.stopScan()
+        unregisterReceiver(btDisconnectReceiver)
+        audioFocusRequest?.let { audioManager.abandonAudioFocusRequest(it) }
     }
 }

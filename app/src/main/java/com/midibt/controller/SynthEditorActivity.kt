@@ -37,7 +37,6 @@ class SynthEditorActivity : AppCompatActivity() {
 
         setupWaveSelector()
         setupUIListeners()
-        setupMidiRemoteControl()
 
         binding.btnBack.setOnClickListener { finish() }
     }
@@ -72,33 +71,35 @@ class SynthEditorActivity : AppCompatActivity() {
         override fun onStopTrackingTouch(s: SeekBar?) {}
     }
 
-    private fun setupMidiRemoteControl() {
-        midiController.setMidiCallback { status, data1, data2 ->
+    override fun onResume() {
+        super.onResume()
+        midiController.addMidiListener("editor") { status, data1, data2 ->
             val type = status and 0xF0
             val channel = status and 0x0F
-
-            if (type == 0xB0) {
-                var targetCC = -1
-                when (data1) {
-                    70 -> { targetCC = 74; runOnUiThread { binding.sbCutoff.progress = data2 } }
-                    72 -> { targetCC = 72; runOnUiThread { binding.sbRelease.progress = data2 } }
-                    73 -> { targetCC = 73; runOnUiThread { binding.sbAttack.progress = data2 } }
+            when (type) {
+                0xB0 -> {
+                    var targetCC = -1
+                    when (data1) {
+                        70 -> { targetCC = 74; runOnUiThread { binding.sbCutoff.progress = data2 } }
+                        72 -> { targetCC = 72; runOnUiThread { binding.sbRelease.progress = data2 } }
+                        73 -> { targetCC = 73; runOnUiThread { binding.sbAttack.progress = data2 } }
+                    }
+                    if (targetCC != -1) synthEngine.controlChange(channel, targetCC, data2)
                 }
-                if (targetCC != -1) synthEngine.controlChange(channel, targetCC, data2)
-            }
-            
-            if (type == 0x90) {
-                if (data2 > 0) synthEngine.noteOn(channel, data1, data2)
-                else synthEngine.noteOff(channel, data1)
-            } else if (type == 0x80) {
-                synthEngine.noteOff(channel, data1)
+                0x90 -> if (data2 > 0) synthEngine.noteOn(channel, data1, data2) else synthEngine.noteOff(channel, data1)
+                0x80 -> synthEngine.noteOff(channel, data1)
+                0xE0 -> synthEngine.pitchBend(channel, (data2 shl 7) or data1)
             }
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        midiController.removeMidiListener("editor")
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        // Limpiar callback para evitar fugas de memoria
         synthEngine.setOscilloscopeCallback { }
     }
 }

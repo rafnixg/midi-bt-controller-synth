@@ -209,9 +209,19 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="8dp"
                 android:text="Editor de Síntesis"
                 app:icon="@android:drawable/ic_menu_preferences" />
+
+            <!-- Botón Panic -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPanic"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Panic — All Notes Off"
+                app:icon="@android:drawable/ic_media_pause" />
 
             <TextView
                 android:id="@+id/currentPresetText"
