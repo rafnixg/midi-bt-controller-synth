@@ -1,3 +1,0 @@
-C:/projectos/midi-bt-controller/app/.cxx/Debug/5b4j213u/x86_64/CMakeFiles/synth-lib.dir
-C:/projectos/midi-bt-controller/app/.cxx/Debug/5b4j213u/x86_64/CMakeFiles/edit_cache.dir
-C:/projectos/midi-bt-controller/app/.cxx/Debug/5b4j213u/x86_64/CMakeFiles/rebuild_cache.dir

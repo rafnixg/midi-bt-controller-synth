@@ -1,1 +1,0 @@
-C:\projectos\midi-bt-controller\app\build\intermediates\cxx\Debug\5b4j213u\obj\arm64-v8a

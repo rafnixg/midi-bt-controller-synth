@@ -1,8 +1,0 @@
-# ninja log v5
-5	643	7902126319440785	CMakeFiles/synth-lib.dir/SynthManager.cpp.o	524501c4f2901b5a
-643	777	7902126320725245	C:/projectos/midi-bt-controller/app/build/intermediates/cxx/Debug/5b4j213u/obj/x86_64/libsynth-lib.so	e71821f50b4958a2
-3	101	7902997239910394	build.ninja	bffb6a0e6c4a7a1e
-0	8	0	clean	8e9fb7bbd248cd65
-1	97	7902997239910394	build.ninja	bffb6a0e6c4a7a1e
-0	6	0	clean	8e9fb7bbd248cd65
-0	7	0	clean	8e9fb7bbd248cd65
