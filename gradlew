@@ -6,7 +6,7 @@
 ##############################################################################
 
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+DEFAULT_JVM_OPTS='-Xmx64m -Xms64m'
 
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
@@ -45,6 +45,7 @@ case "`uname`" in
     ;;
 esac
 
+APP_HOME="$(cd "$(dirname "$0")" && pwd)"
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
 # Determine the Java command to use to start the JVM.
@@ -63,7 +64,7 @@ else
 fi
 
 # Setup the arguments for the wrapper
-GRADLE_OPTS="$GRADLE_OPTS \"-Dorg.gradle.appname=$APP_BASE_NAME\""
+GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.appname=$APP_BASE_NAME"
 
 exec "$JAVACMD" $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS \
     -classpath "$CLASSPATH" \
