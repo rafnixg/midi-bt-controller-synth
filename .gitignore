@@ -13,7 +13,7 @@ captures
 # Gradle
 .gradle/
 local.properties
-gradle/wrapper/gradle-wrapper.jar
+# gradle-wrapper.jar IS intentionally committed (needed to build without a local Gradle install)
 .cache
 
 # NDK / C++ - librerías precompiladas (descargar con scripts/setup_fluidsynth)
