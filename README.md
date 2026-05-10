@@ -23,7 +23,7 @@ Aplicación Android para conectar teclados MIDI vía Bluetooth y reproducir soni
 ### 1. Clonar y abrir proyecto
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/rafnixg/midi-bt-controller-synth.git
 cd midi-bt-controller
 # Abrir con Android Studio
 ```
